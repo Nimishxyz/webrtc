@@ -62,6 +62,7 @@ impl DnsConn {
         socket.set_reuse_port(true)?;
 
         socket.set_reuse_address(true)?;
+        #[cfg(not(target_os = "wasi"))]
         socket.set_broadcast(true)?;
         socket.set_nonblocking(true)?;
 
@@ -78,6 +79,7 @@ impl DnsConn {
 
             for interface in &interfaces {
                 if let Some(SocketAddr::V4(e)) = interface.addr {
+                    #[cfg(not(target_os = "wasi"))]
                     if let Err(e) = socket.join_multicast_v4(&Ipv4Addr::new(224, 0, 0, 251), e.ip())
                     {
                         log::trace!("Error connecting multicast, error: {e:?}");
